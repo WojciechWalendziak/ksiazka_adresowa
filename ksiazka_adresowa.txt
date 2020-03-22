@@ -1,0 +1,404 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <vector>
+#include <conio.h>
+
+using namespace std;
+
+struct Osoba
+{
+    int id = 0;
+    string imie = "", nazwisko = "", numerTelefonu = "", email = "", adres = "";
+};
+potega_dziesiec(int wykladnik)
+{
+    int i, wynik = 1;
+    if(wykladnik != 0)
+    {
+        for(i = 0; i < wykladnik; i++)
+        {
+            wynik = wynik*10;
+        }
+    }
+    return wynik;
+}
+vector<Osoba> wczytaj_adresatow()
+{
+    int i, x, id_number = 0, licznik;
+    string imie = "", nazwisko = "", telefon = "", email = "", adres = "", linia = "";
+    Osoba adresat;
+    vector <Osoba> adresaci;
+    fstream ksiazka_adresowa;
+    ksiazka_adresowa.open("ksiazka_adresowa.txt", ios::in);
+    if(ksiazka_adresowa.good()==false)
+    {
+        exit(0);
+    }
+    else
+    {
+        while(getline(ksiazka_adresowa, linia))
+        {
+            i = 0;
+            x = 0;
+            licznik = 0;
+            do
+            {
+                if(linia[i] == '|')
+                {
+                    licznik++;
+                    switch(licznik)
+                    {
+                        case 1:
+                            for(x = 0; x < i; x++)
+                            {
+                                id_number = id_number + (linia[x]-48)*potega_dziesiec(i-x-1);
+                            }
+                            x = x + 1;
+                            adresat.id = id_number;
+                            id_number = 0;
+                            break;
+                        case 2:
+                            for(x; x < i; x++)
+                            {
+                                imie = imie + linia[x];
+                            }
+                            x = x + 1;
+                            adresat.imie = imie;
+                            imie = "";
+                            break;
+                        case 3:
+                            for(x; x < i; x++)
+                            {
+                                nazwisko = nazwisko + linia[x];
+                            }
+                            x = x + 1;
+                            adresat.nazwisko = nazwisko;
+                            nazwisko = "";
+                            break;
+                        case 4:
+                            for(x; x < i; x++)
+                            {
+                                telefon = telefon + linia[x];
+                            }
+                            x = x + 1;
+                            adresat.numerTelefonu = telefon;
+                            telefon = "";
+                            break;
+                        case 5:
+                            for(x; x < i; x++)
+                            {
+                                email = email + linia[x];
+                            }
+                            x = x + 1;
+                            adresat.email = email;
+                            email = "";
+                            break;
+                        case 6:
+                            for(x; x < i; x++)
+                            {
+                                adres = adres + linia[x];
+                            }
+                            adresat.adres = adres;
+                            adres = "";
+                            break;
+                    }
+                }
+                i++;
+            }while(licznik != 6);
+            adresaci.push_back(adresat);
+        };
+    }
+    ksiazka_adresowa.close();
+    return adresaci;
+}
+int dodaj_adresata(){
+
+    int i;
+    Osoba adresat;
+    vector <Osoba> adresaci;
+    fstream ksiazka_adresowa;
+    ksiazka_adresowa.open("ksiazka_adresowa.txt", ios::out | ios::app);
+    if(ksiazka_adresowa.good()==false)
+    {
+        exit(0);
+    }
+    else
+    {
+        adresaci = wczytaj_adresatow();
+        if(adresaci.size() > 0)
+        {
+            adresat.id = adresaci[adresaci.size()-1].id + 1;
+        }
+        else
+        {
+            adresat.id = 1;
+        }
+        cout << "Podaj imie: ";
+        cin >> adresat.imie;
+        cout << "Podaj nazwisko: ";
+        cin >> adresat.nazwisko;
+        cout << "Podaj numer Telefonu: ";
+        cin.sync();
+        getline(cin, adresat.numerTelefonu);
+        cout << "Podaj email: ";
+        cin >> adresat.email;
+        cout << "Podaj adres: ";
+        cin.sync();
+        getline(cin, adresat.adres);
+        cout << endl;
+        ksiazka_adresowa<<adresat.id<<"|"<<adresat.imie<<"|"<<adresat.nazwisko<<"|"<<adresat.numerTelefonu<<"|"<<adresat.email<<"|"<<adresat.adres<<"|"<<endl;
+    }
+    ksiazka_adresowa.close();
+    adresaci.erase (adresaci.begin(),adresaci.begin()+adresaci.size());
+}
+void znajdz_imiona_nazwiska(int numer){
+
+    int i;
+    char znak = 'x';
+    string dana_szukana;
+    Osoba adresat;
+    vector <Osoba> adresaci;
+    adresaci = wczytaj_adresatow();
+    if(numer == 2)
+    {
+        cout << "Podaj szukane imie: ";
+        cin >> dana_szukana;
+        for(i = 0; i < adresaci.size(); i++)
+        {
+            if(adresaci[i].imie == dana_szukana)
+            {
+                cout << "ID: " << adresaci[i].id << endl;
+                cout << "Imie: " << adresaci[i].imie << endl;
+                cout << "Nazwisko: " << adresaci[i].nazwisko << endl;
+                cout << "Telefon: " << adresaci[i].numerTelefonu << endl;
+                cout << "Email: " << adresaci[i].email << endl;
+                cout << "Adres: " << adresaci[i].adres << endl;
+                cout << endl;
+            }
+        }
+    }
+    else
+    {
+        cout << "Podaj szukane nazwisko: ";
+        cin >> dana_szukana;
+        for(i = 0; i < adresaci.size(); i++)
+        {
+            if(adresaci[i].nazwisko == dana_szukana)
+            {
+                cout << "ID: " << adresaci[i].id << endl;
+                cout << "Imie: " << adresaci[i].imie << endl;
+                cout << "Nazwisko: " << adresaci[i].nazwisko << endl;
+                cout << "Telefon: " << adresaci[i].numerTelefonu << endl;
+                cout << "Email: " << adresaci[i].email << endl;
+                cout << "Adres: " << adresaci[i].adres << endl;
+                cout << endl;
+            }
+        }
+    }
+    while(znak != 13)
+    {
+        cout << "Wcisnij ENTER zeby kontynuowac" << endl;
+        znak = getch();
+    }
+    adresaci.erase (adresaci.begin(),adresaci.begin()+adresaci.size());
+}
+
+void pokaz_wszystkich(){
+
+    int i;
+    char znak = 'x';
+    Osoba adresat;
+    vector <Osoba> adresaci;
+    adresaci = wczytaj_adresatow();
+    for(i = 0; i < adresaci.size(); i++)
+    {
+        cout << "ID: " << adresaci[i].id << endl;
+        cout << "Imie: " << adresaci[i].imie << endl;
+        cout << "Nazwisko: " << adresaci[i].nazwisko << endl;
+        cout << "Telefon: " << adresaci[i].numerTelefonu << endl;
+        cout << "Email: " << adresaci[i].email << endl;
+        cout << "Adres: " << adresaci[i].adres << endl;
+        cout << endl;
+    }
+    while(znak != 13)
+    {
+        cout << "Wcisnij ENTER zeby kontynuowac" << endl;
+        znak = getch();
+    }
+    adresaci.erase(adresaci.begin(),adresaci.begin()+adresaci.size());
+}
+void usun_adresata()
+{
+    char znak = 'x';
+    int id_do_usuniecia, x = 0, i = 0, id;
+    string imie, nazwisko, telefon, email, adres;
+    fstream ksiazka_adresowa;
+    Osoba adresat;
+    vector <Osoba> adresaci;
+    while(znak != 116)
+    {
+        cout << "Podaj numer id do usuniecia: ";
+        cin >> id_do_usuniecia;
+        cout << "Jezeli potwierdzasz usuniecie Adresata o numerze ID " << id_do_usuniecia << " wczytaj z klawiatury mala litere <t>" << endl;
+        znak = getch();
+    }
+    adresaci = wczytaj_adresatow();
+     for(i = 0; i < adresaci.size(); i++)
+     {
+         if(adresaci[i].id == id_do_usuniecia)
+         {
+             adresaci.erase(adresaci.begin()+i);
+             x = 1;
+             i = adresaci.size();
+         }
+     }
+     if(x == 1)
+     {
+         ksiazka_adresowa.open("ksiazka_adresowa.txt", ios::out);
+         for(i = 0; i < adresaci.size(); i++)
+         {
+             ksiazka_adresowa<<adresaci[i].id<<"|"<<adresaci[i].imie<<"|"<<adresaci[i].nazwisko<<"|"<<adresaci[i].numerTelefonu<<"|"<<adresaci[i].email<<"|"<<adresaci[i].adres<<"|"<<endl;
+         }
+         ksiazka_adresowa.close();
+         while(znak != 13)
+         {
+             cout << "Adresat usuniety. Wcisnij ENTER zeby kontynuowac" << endl;
+             znak = getch();
+         }
+     }
+     else
+     {
+         while(znak != 13)
+         {
+             cout << "Nie ma adresata z takim id. Wcisnij ENTER zeby kontynuowac" << endl;
+             znak = getch();
+         }
+     }
+    adresaci.erase(adresaci.begin(),adresaci.begin()+adresaci.size());
+}
+void edytuj_adresata()
+{
+    char znak = 'x';
+    int id_do_edycji, wybrany_numer, i = 0;
+    string imie = "", nazwisko = "", telefon = "", email = "", adres = "";
+    fstream ksiazka_adresowa;
+    Osoba adresat;
+    vector <Osoba> adresaci;
+    cout << "Podaj numer id do edycji: ";
+    cin >> id_do_edycji;
+    adresaci = wczytaj_adresatow();
+     for(i = 0; i < adresaci.size(); i++)
+     {
+         if(adresaci[i].id == id_do_edycji)
+         {
+             cout << "wskaz element do edycji" << endl;
+             cout << "1. imie" << endl;
+             cout << "2. nazwisko" << endl;
+             cout << "3. numer telefonu" << endl;
+             cout << "4. email" << endl;
+             cout << "5. adres" << endl;
+             cout << "6. powrot do menu" << endl;
+             cin >> wybrany_numer;
+             switch(wybrany_numer)
+                    {
+                        case 1:
+                            cout << "Podaj nowe imiê: ";
+                            cin >> imie;
+                            adresaci[i].imie = imie;
+                            imie = "";
+                            break;
+                        case 2:
+                            cout << "Podaj nowe nazwisko: ";
+                            cin >> nazwisko;
+                            adresaci[i].nazwisko = nazwisko;
+                            nazwisko = "";
+                            break;
+                        case 3:
+                            cout << "Podaj nowy telefon: ";
+                            cin >> telefon;
+                            adresaci[i].numerTelefonu = telefon;
+                            telefon = "";
+                            break;
+                        case 4:
+                            cout << "Podaj nowy email: ";
+                            cin >> email;
+                            adresaci[i].email = email;
+                            email = "";
+                            break;
+                        case 5:
+                            cout << "Podaj nowy adres: ";
+                            cin.sync();
+                            getline(cin, adres);
+                            adresaci[i].adres = adres;
+                            adres = "";
+                            break;
+                        case 6:
+                            znak = 13;
+                            break;
+                    }
+         }
+     }
+     ksiazka_adresowa.open("ksiazka_adresowa.txt", ios::out);
+     for(i = 0; i < adresaci.size(); i++)
+     {
+         ksiazka_adresowa<<adresaci[i].id<<"|"<<adresaci[i].imie<<"|"<<adresaci[i].nazwisko<<"|"<<adresaci[i].numerTelefonu<<"|"<<adresaci[i].email<<"|"<<adresaci[i].adres<<"|"<<endl;
+     }
+     ksiazka_adresowa.close();
+     while(znak != 13)
+     {
+         cout << "Wcisnij ENTER zeby kontynuowac" << endl;
+         znak = getch();
+     }
+    adresaci.erase(adresaci.begin(),adresaci.begin()+adresaci.size());
+}
+int zakoncz_program()
+{
+    int koniec = 1;
+    return koniec;
+}
+int main()
+{
+    int wybor = 1;
+    int koniec = 0;
+
+    while(koniec == 0)
+    {
+        system("cls");
+        cout <<"wybierz akcje: " << endl;
+        cout <<"1. dodaj adresata" << endl;
+        cout <<"2. znajdz adresatow o danym imieniu" << endl;
+        cout <<"3. znajdz adresatow o danym nazwisku" << endl;
+        cout <<"4. pokaz wszytskich adresatow" << endl;
+        cout <<"5. edytuj adresata" << endl;
+        cout <<"6. usun adresata" << endl;
+        cout <<"7. zakoncz program" << endl;
+        cin >> wybor;
+
+        switch(wybor){
+
+        case 1:
+            dodaj_adresata();
+            break;
+        case 2:
+            znajdz_imiona_nazwiska(wybor);
+            break;
+        case 3:
+            znajdz_imiona_nazwiska(wybor);
+            break;
+        case 4:
+            pokaz_wszystkich();
+            break;
+        case 5:
+            edytuj_adresata();
+            break;
+        case 6:
+            usun_adresata();
+            break;
+        case 7:
+            koniec = zakoncz_program();
+            break;
+        }
+    }
+	return 0;
+}

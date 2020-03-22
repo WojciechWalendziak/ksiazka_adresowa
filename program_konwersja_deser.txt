@@ -1,0 +1,139 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <vector>
+
+using namespace std;
+
+struct Osoba
+{
+    int id = 0;
+    string imie = "", nazwisko = "", numerTelefonu = "", email = "", adres = "";
+};
+int wczytaj_adresatow()
+{
+    string linia = "";
+    int id_number = 0, licznik = 1;
+    fstream ksiazka_adresowa;
+    ksiazka_adresowa.open("ksiazka_adresowa.txt", ios::in);
+    if(ksiazka_adresowa.good()==false)
+    {
+        exit(0);
+    }
+    else
+    {
+        while(getline(ksiazka_adresowa, linia))
+        {
+            if(licznik == 6)
+            {
+                id_number++;
+                licznik = 1;
+            }
+            licznik++;
+        };
+    }
+    ksiazka_adresowa.close();
+    return id_number;
+}
+int dodaj_adresata(){
+
+    Osoba adresat;
+    fstream ksiazka_adresowa;
+    ksiazka_adresowa.open("ksiazka_adresowa.txt", ios::out | ios::app);
+    if(ksiazka_adresowa.good()==false)
+    {
+        exit(0);
+    }
+    else
+    {
+        adresat.id = wczytaj_adresatow() + 1;
+        cout << "Podaj imie: ";
+        cin >> adresat.imie;
+        cout << "Podaj nazwisko: ";
+        cin >> adresat.nazwisko;
+        cout << "Podaj numer Telefonu: ";
+        cin.sync();
+        getline(cin, adresat.numerTelefonu);
+        cout << "Podaj email: ";
+        cin >> adresat.email;
+        cout << "Podaj adres: ";
+        cin.sync();
+        getline(cin, adresat.adres);
+        cout << endl;
+        ksiazka_adresowa<<adresat.id<<endl;
+        ksiazka_adresowa<<adresat.imie<<endl;
+        ksiazka_adresowa<<adresat.nazwisko<<endl;
+        ksiazka_adresowa<<adresat.numerTelefonu<<endl;
+        ksiazka_adresowa<<adresat.email<<endl;
+        ksiazka_adresowa<<adresat.adres<<endl;
+    }
+    ksiazka_adresowa.close();
+}
+void konwertuj_plik(){
+
+    int i, licznik_lini = 1;
+    string wiersz_danych = "", linia = "";
+    vector <string> adresaci;
+    fstream plik_ksiazka_adresowa, plik_ksiazka_adresowa_nowa;
+    plik_ksiazka_adresowa.open("ksiazka_adresowa.txt", ios::in);
+    if(plik_ksiazka_adresowa.good()==false)
+    {
+        exit(0);
+    }
+    else
+    {
+        while(getline(plik_ksiazka_adresowa, linia))
+        {
+            wiersz_danych = wiersz_danych + linia + "|";
+            linia = "";
+            licznik_lini++;
+            if(licznik_lini == 7)
+            {
+                adresaci.push_back(wiersz_danych);
+                licznik_lini = 1;
+                wiersz_danych = "";
+            }
+        }
+        plik_ksiazka_adresowa.close();
+        plik_ksiazka_adresowa_nowa.open("ksiazka_adresowa_nowa.txt", ios::out);
+        for(i = 0; i < adresaci.size(); i++)
+        {
+             plik_ksiazka_adresowa_nowa<<adresaci[i]<<endl;
+        }
+        plik_ksiazka_adresowa_nowa.close();
+    }
+}
+int zakoncz_program()
+{
+    int koniec = 1;
+    return koniec;
+}
+int main()
+{
+    int wybor = 1;
+    int koniec = 0;
+
+    while(koniec == 0)
+    {
+        system("cls");
+        cout <<"wybierz akcje: " << endl;
+        cout <<"1. dodaj adresata" << endl;
+        cout <<"2. konwertuj plik" << endl;
+        cout <<"3. zakoncz program" << endl;
+        cin >> wybor;
+
+        switch(wybor){
+
+        case 1:
+            dodaj_adresata();
+            break;
+        case 2:
+            konwertuj_plik();
+            break;
+        case 3:
+            koniec = zakoncz_program();
+            break;
+        }
+    }
+	return 0;
+}
